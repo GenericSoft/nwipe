@@ -33,6 +33,53 @@
 #include "logging.h"
 #include "miscellaneous.h"
 
+
+/**
+ * Retrieves the PC's serial number from DMI information.
+ * 
+ * @param serial_buffer    A buffer where the serial number will be stored
+ * @param buffer_size      The size of the buffer
+ * 
+ * @return                 0 on success, 1 on failure
+ */
+int nwipe_get_pc_serial(char *serial_buffer, int buffer_size)
+{
+    FILE *fp;
+    char result[512];
+    
+    // Initialize the buffer with a default value
+    strncpy(serial_buffer, "Unknown", buffer_size);
+    serial_buffer[buffer_size - 1] = '\0';
+    
+    // Try to get system serial from DMI information
+    fp = popen("dmidecode -s system-serial-number 2>/dev/null", "r");
+    if (fp == NULL) {
+        return 1;
+    }
+
+    if (fgets(result, sizeof(result) - 1, fp) != NULL) {
+        // Strip newlines and whitespace
+        int i = 0;
+        while (result[i] != '\0' && result[i] != '\n' && result[i] != '\r') {
+            i++;
+        }
+        result[i] = '\0';
+        
+        // If we got a valid result (not "Not Available" or similar)
+        if (strcmp(result, "Not Available") != 0 && 
+            strcmp(result, "None") != 0 && 
+            strcmp(result, "To be filled by O.E.M.") != 0 && 
+            strlen(result) > 0) {
+            
+            strncpy(serial_buffer, result, buffer_size - 1);
+            serial_buffer[buffer_size - 1] = '\0';
+        }
+    }
+    
+    pclose(fp);
+    return 0;
+}
+
 /* Convert string to upper case
  */
 void strupper( char* str )
