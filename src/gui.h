@@ -142,4 +142,8 @@ void nwipe_update_speedring( nwipe_speedring_t* speedring, u64 speedring_done, t
 #define SHOWING_PRIOR_TO_DRIVE_SELECTION 0
 #define SHOWING_IN_CONFIG_MENUS 1
 
+/* PC serial position in stats window */
+#define NWIPE_GUI_STATS_PCSERIAL_Y 6
+#define NWIPE_GUI_STATS_PCSERIAL_X 1
+
 #endif /* GUI_H_ */

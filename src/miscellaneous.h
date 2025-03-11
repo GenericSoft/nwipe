@@ -27,6 +27,8 @@
 #define FOUR_DIGITS 4
 #define TWO_DIGITS 2
 
+int nwipe_get_pc_serial(char *serial_buffer, int buffer_size);
+
 /**
  * Convert the string from lower to upper case
  * @param pointer to a null terminated string

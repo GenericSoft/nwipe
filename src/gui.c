@@ -99,7 +99,7 @@
 
 /* Stats window: width, height, x coordinate, y coordinate. */
 #define NWIPE_GUI_STATS_W ( COLS - 44 )
-#define NWIPE_GUI_STATS_H 7
+#define NWIPE_GUI_STATS_H 8
 #define NWIPE_GUI_STATS_Y 1
 #define NWIPE_GUI_STATS_X 44
 
@@ -6163,6 +6163,16 @@ void* nwipe_gui_status( void* ptr )
 
     extern int terminate_signal;
 
+    /* Static PC serial number buffer - retrieved only once */
+    static char pc_serial[64] = {0};
+    static int pc_serial_retrieved = 0;
+
+    if (!pc_serial_retrieved) {
+        nwipe_get_pc_serial(pc_serial, sizeof(pc_serial));
+        pc_serial_retrieved = 1;
+    }
+    
+
     nwipe_thread_data_ptr_t* nwipe_thread_data_ptr;
     nwipe_thread_data_ptr = (nwipe_thread_data_ptr_t*) ptr;
 
@@ -6231,6 +6241,7 @@ void* nwipe_gui_status( void* ptr )
 
     /* Whether the screen has been blanked by the user. */
     static int nwipe_gui_blank = 0;
+    
 
     /* The current time. */
     time_t nwipe_time_now;
@@ -6765,6 +6776,13 @@ void* nwipe_gui_status( void* ptr )
                            NWIPE_GUI_STATS_TAB,
                            "  %llu",
                            nwipe_misc_thread_data->errors );
+                
+                mvwprintw( stats_window, NWIPE_GUI_STATS_PCSERIAL_Y, NWIPE_GUI_STATS_PCSERIAL_X, "PC Serial:" );
+                mvwprintw( stats_window,
+                           NWIPE_GUI_STATS_PCSERIAL_Y,
+                           NWIPE_GUI_STATS_TAB,
+                           "  %s",
+                           pc_serial );
 
                 /* Add a border. */
                 box( stats_window, 0, 0 );
